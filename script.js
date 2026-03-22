@@ -1,151 +1,112 @@
-// --- CONFIGURATION & PRE-MADE ACCOUNTS ---
-const PRE_MADE_ADMINS = [
-    { user: "Owner", pass: "12345", balance: 1000000, isAdmin: true },
-    { user: "Admin", pass: "RBX2026", balance: 50000, isAdmin: true }
-];
-
-// Initialize system: Load admins into storage if they don't exist
-PRE_MADE_ADMINS.forEach(acc => {
-    if (!localStorage.getItem(acc.user)) {
-        localStorage.setItem(acc.user, JSON.stringify(acc));
-    }
-});
-
 let currentUser = null;
-let gameActive = false;
 let godMode = false;
-let crashMultiplier = 1.00;
-let crashInterval = null;
-let minesLocation = [];
 
-// --- AUTHENTICATION SYSTEM ---
+// Pre-made Admin Accounts
+const admins = [{user: "Owner", pass: "12345", bal: 1000000, admin: true}];
+admins.forEach(a => { if(!localStorage.getItem(a.user)) localStorage.setItem(a.user, JSON.stringify({user:a.user, pass:a.pass, balance:a.bal, isAdmin:a.admin})); });
+
+// Auth
 function handleAuth(type) {
-    const user = document.getElementById('username').value.trim();
-    const pass = document.getElementById('password').value.trim();
-
-    if (!user || !pass) return alert("Please enter both username and password.");
-
-    if (type === 'signup') {
-        if (localStorage.getItem(user)) return alert("User already exists!");
-        
-        let newUser = { 
-            user: user, 
-            pass: pass, 
-            balance: 10000, 
-            isAdmin: user.toLowerCase().includes("admin") 
-        };
-        localStorage.setItem(user, JSON.stringify(newUser));
-        alert("Account Created! You received 10,000 FAKE Robux.");
-        currentUser = newUser;
-        loadGame();
+    const u = document.getElementById('username').value;
+    const p = document.getElementById('password').value;
+    if(type === 'signup') {
+        let data = {user: u, pass: p, balance: 10000, isAdmin: u.toLowerCase().includes('admin')};
+        localStorage.setItem(u, JSON.stringify(data));
+        currentUser = data;
     } else {
-        let storedData = JSON.parse(localStorage.getItem(user));
-        if (storedData && storedData.pass === pass) {
-            currentUser = storedData;
-            loadGame();
-        } else {
-            alert("Invalid Username or Password.");
-        }
+        let data = JSON.parse(localStorage.getItem(u));
+        if(data && data.pass === p) currentUser = data;
+        else return alert("Invalid Login");
     }
-}
-
-function loadGame() {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
-    document.getElementById('display-name').innerText = currentUser.user;
-    updateBalanceDisplay();
-    
-    if (currentUser.isAdmin) {
-        document.getElementById('admin-btn').style.display = 'inline-block';
-    }
+    updateUI();
 }
 
-function updateBalanceDisplay() {
+function updateUI() {
+    document.getElementById('display-name').innerText = currentUser.user;
     document.getElementById('balance').innerText = currentUser.balance.toLocaleString();
-    // Save progress to localStorage
+    if(currentUser.isAdmin) document.getElementById('admin-btn').style.display = 'inline-block';
     localStorage.setItem(currentUser.user, JSON.stringify(currentUser));
 }
 
-// --- MINES GAME LOGIC ---
-function startMines() {
-    const bet = parseInt(document.getElementById('bet-amount').value);
-    if (isNaN(bet) || bet <= 0) return alert("Enter a valid bet.");
-    if (bet > currentUser.balance) return alert("Insufficient Fake Robux!");
+function switchTab(game) {
+    document.querySelectorAll('.game-module').forEach(m => m.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(game + '-game').style.display = 'flex';
+    event.target.classList.add('active');
+}
 
-    currentUser.balance -= bet;
-    updateBalanceDisplay();
-    gameActive = true;
-    
-    // Generate 5 random mine locations
-    minesLocation = [];
-    while(minesLocation.length < 5) {
-        let r = Math.floor(Math.random() * 25);
-        if(!minesLocation.includes(r)) minesLocation.push(r);
+// --- CRASH GAME ENGINE ---
+let crashRunning = false;
+let multiplier = 1.00;
+let crashTimer;
+
+function handleCrashAction() {
+    const btn = document.getElementById('crash-control');
+    const bet = parseInt(document.getElementById('crash-bet').value);
+
+    if(!crashRunning) {
+        if(bet > currentUser.balance) return alert("Not enough R$");
+        currentUser.balance -= bet;
+        updateUI();
+        crashRunning = true;
+        multiplier = 1.00;
+        btn.innerText = "CASH OUT";
+        btn.style.background = "orange";
+        
+        let crashAt = (Math.random() * 5 + 1).toFixed(2);
+        if(godMode) crashAt = 999; 
+
+        crashTimer = setInterval(() => {
+            multiplier += 0.01;
+            document.getElementById('multiplier-text').innerText = multiplier.toFixed(2) + "x";
+            if(multiplier >= crashAt) {
+                clearInterval(crashTimer);
+                crashRunning = false;
+                document.getElementById('multiplier-text').style.color = "red";
+                btn.innerText = "BET";
+                btn.style.background = "var(--green)";
+                setTimeout(() => document.getElementById('multiplier-text').style.color = "white", 2000);
+            }
+        }, 100);
+    } else {
+        clearInterval(crashTimer);
+        let win = Math.floor(bet * multiplier);
+        currentUser.balance += win;
+        alert("Won " + win + " R$!");
+        crashRunning = false;
+        btn.innerText = "BET";
+        btn.style.background = "var(--green)";
+        updateUI();
     }
+}
 
+// --- MINES ENGINE ---
+let mineLocations = [];
+function startMines() {
     const grid = document.getElementById('mines-grid');
     grid.innerHTML = '';
-    for (let i = 0; i < 25; i++) {
-        let tile = document.createElement('div');
-        tile.className = 'tile';
-        tile.innerText = "?";
-        tile.onclick = () => revealTile(tile, i, bet);
-        grid.appendChild(tile);
+    mineLocations = Array.from({length: 5}, () => Math.floor(Math.random() * 25));
+    for(let i=0; i<25; i++) {
+        let t = document.createElement('div');
+        t.className = 'tile';
+        t.onclick = () => {
+            if(mineLocations.includes(i) && !godMode) { t.classList.add('mine'); t.innerText = "💣"; alert("LOSE"); startMines(); }
+            else { t.classList.add('safe'); t.innerText = "💎"; currentUser.balance += 100; updateUI(); }
+        };
+        grid.appendChild(t);
     }
-    document.getElementById('cashout-btn').disabled = false;
+    document.getElementById('mines-cashout').disabled = false;
 }
 
-function revealTile(el, index, bet) {
-    if (!gameActive || el.classList.contains('safe')) return;
-
-    if (minesLocation.includes(index) && !godMode) {
-        el.className = 'tile mine';
-        el.innerText = '💣';
-        gameActive = false;
-        document.getElementById('cashout-btn').disabled = true;
-        alert("BOOM! You lost " + bet + " Fake Robux.");
-    } else {
-        el.className = 'tile safe';
-        el.innerText = '💎';
-        // Simple logic: Each diamond adds 20% to the bet value
-        currentUser.balance += Math.floor(bet * 0.2);
-        updateBalanceDisplay();
-    }
-}
-
-function cashOutMines() {
-    gameActive = false;
-    document.getElementById('cashout-btn').disabled = true;
-    alert("Profit Secured!");
-    const grid = document.getElementById('mines-grid');
-    grid.innerHTML = '<h3>Game Over - Tiles Reset</h3>';
-}
-
-// --- ADMIN PANEL FUNCTIONS ---
+// --- ADMIN STUFF ---
 function toggleAdmin() {
-    const panel = document.getElementById('admin-panel');
-    panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+    const m = document.getElementById('admin-panel');
+    m.style.display = m.style.display === 'block' ? 'none' : 'block';
 }
-
-function addFakeRobux(amt) {
-    currentUser.balance += amt;
-    updateBalanceDisplay();
-    alert(`Added ${amt} Fake Robux to your account!`);
-}
-
+function adjustBalance(n) { currentUser.balance += n; updateUI(); }
 function toggleGodMode() {
     godMode = !godMode;
-    const status = document.getElementById('god-status');
-    status.innerText = godMode ? "ON" : "OFF";
-    status.style.color = godMode ? "#00ff44" : "#ff4444";
-}
-
-function adminBanOther(targetName) {
-    if (targetName === currentUser.user) return alert("You can't ban yourself!");
-    localStorage.removeItem(targetName);
-    alert(`User ${targetName} has been banned.`);
-}
-
-function logout() {
-    location.reload();
+    document.getElementById('god-status').innerText = godMode ? "ON" : "OFF";
 }

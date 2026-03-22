@@ -7,9 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- AUTH SCREEN -->
     <div id="auth-screen">
         <div class="auth-box glass">
             <h1 class="logo-text">RORUSH <span class="badge">ROBLOX</span></h1>
+            <p style="color:#666; font-size:12px;">FAKE CURRENCY - FOR FUN</p>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
             <button onclick="handleAuth('login')" class="btn-primary">LOGIN</button>
@@ -17,14 +19,14 @@
         </div>
     </div>
 
+    <!-- MAIN GAME SCREEN -->
     <div id="game-screen" style="display:none;">
         <header class="glass">
             <div class="brand">RORUSH <span class="badge">ROBLOX</span></div>
             <div class="nav-links">
                 <button class="nav-btn active" onclick="switchTab('crash')">Crash</button>
                 <button class="nav-btn" onclick="switchTab('mines')">Mines</button>
-                <button class="nav-btn" onclick="switchTab('towers')">Towers</button>
-                <button class="nav-btn" onclick="switchTab('admin')" id="admin-nav" style="display:none;">⚙️ Admin</button>
+                <button class="nav-btn" id="admin-nav-btn" style="display:none;" onclick="switchTab('admin')">⚙️ Admin</button>
             </div>
             <div class="user-pill">
                 <span id="display-name">User</span> • <span class="bal-text"><span id="balance">0</span> R$</span>
@@ -33,52 +35,58 @@
         </header>
 
         <main class="dashboard">
-            <section id="game-view" class="view">
-                <div class="game-card glass" id="crash-area">
-                    <h1 id="multiplier">1.00x</h1>
+            <!-- CRASH VIEW -->
+            <section id="crash-view" class="game-view">
+                <div class="game-card glass">
+                    <h1 id="multiplier-display">1.00x</h1>
                     <div class="controls">
-                        <input type="number" id="bet-amt" value="100">
-                        <button id="main-action" onclick="playCrash()">BET</button>
+                        <input type="number" id="crash-bet" value="100">
+                        <button id="crash-action-btn" onclick="handleCrashLogic()">BET</button>
                     </div>
                 </div>
             </section>
 
-            <section id="admin-view" class="view" style="display:none;">
+            <!-- MINES VIEW -->
+            <section id="mines-view" class="game-view" style="display:none;">
+                <div class="game-card glass">
+                    <div id="mines-grid" class="mines-grid"></div>
+                    <div class="controls">
+                        <input type="number" id="mines-bet" value="100">
+                        <button onclick="startMines()">START MINES</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN VIEW -->
+            <section id="admin-view" class="game-view" style="display:none;">
                 <div class="admin-header">
                     <div class="admin-icon">⚙️</div>
                     <div>
                         <h2>Admin Panel</h2>
-                        <p>Manage users, funds, and accounts</p>
+                        <p>Manage users and funds</p>
                     </div>
                 </div>
-
                 <div class="user-lookup glass">
                     <h3>🔍 User Lookup</h3>
                     <div class="search-row">
-                        <input type="text" id="target-user" placeholder="Enter username...">
-                        <button class="btn-orange" onclick="adminLookup()">LOOK UP</button>
+                        <input type="text" id="target-username" placeholder="Enter username...">
+                        <button class="btn-orange" onclick="adminLookupUser()">LOOK UP</button>
                     </div>
                 </div>
-
-                <div id="lookup-results" class="glass" style="display:none;">
-                    <div class="result-header">
-                        <h2 id="res-name">User</h2>
-                        <p id="res-id">ID: 0001</p>
-                    </div>
+                <div id="lookup-results" class="glass" style="display:none; margin-top:20px; padding:20px;">
+                    <h2 id="res-name">User</h2>
                     <div class="stats-grid">
                         <div class="stat-box"><span>BALANCE</span><p id="res-bal">0</p></div>
-                        <div class="stat-box"><span>WAGERED</span><p>0</p></div>
-                        <div class="stat-box"><span>PROFIT</span><p id="res-profit" style="color:var(--red)">0</p></div>
                     </div>
-                    <div class="admin-actions">
-                        <button class="btn-green" onclick="adjustFunds(1000)">+ GIVE 1,000</button>
-                        <button class="btn-red" onclick="adjustFunds(-1000)">- REMOVE 1,000</button>
-                        <button class="btn-danger" onclick="deleteUser()">DELETE ACCOUNT</button>
+                    <div class="admin-actions" style="margin-top:20px; display:flex; gap:10px;">
+                        <button class="btn-green" onclick="modifyUserFunds(1000)">+ GIVE 1,000</button>
+                        <button class="btn-red" onclick="modifyUserFunds(-1000)">- REMOVE 1,000</button>
                     </div>
                 </div>
             </section>
         </main>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

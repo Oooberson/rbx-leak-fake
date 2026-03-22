@@ -2,92 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RBX-LEAK | FAKE</title>
+    <title>RORUSH | Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="auth-screen">
-        <div class="auth-box">
-            <h1>RBX-LEAK</h1>
-            <p style="color: #666; font-size: 12px; margin-bottom: 20px;">FOR ENTERTAINMENT ONLY - NO REAL ROBUX</p>
+        <div class="auth-box glass">
+            <h1 class="logo-text">RORUSH <span class="badge">ROBLOX</span></h1>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
-            <button onclick="handleAuth('login')">LOGIN</button>
-            <button onclick="handleAuth('signup')" class="secondary-btn">SIGN UP</button>
+            <button onclick="handleAuth('login')" class="btn-primary">LOGIN</button>
+            <button onclick="handleAuth('signup')" class="btn-ghost">SIGN UP</button>
         </div>
     </div>
 
     <div id="game-screen" style="display:none;">
-        <header>
-            <div class="nav-tabs">
-                <button class="tab-btn active" onclick="switchTab('crash')">Crash</button>
-                <button class="tab-btn" onclick="switchTab('mines')">Mines</button>
-                <button class="tab-btn" onclick="switchTab('towers')">Towers</button>
-                <button class="tab-btn" onclick="switchTab('cases')">Cases</button>
+        <header class="glass">
+            <div class="brand">RORUSH <span class="badge">ROBLOX</span></div>
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="switchTab('crash')">Crash</button>
+                <button class="nav-btn" onclick="switchTab('mines')">Mines</button>
+                <button class="nav-btn" onclick="switchTab('towers')">Towers</button>
+                <button class="nav-btn" onclick="switchTab('admin')" id="admin-nav" style="display:none;">⚙️ Admin</button>
             </div>
-            <div class="user-info">
-                <span id="display-name">Guest</span>
-                <div class="balance-display"><span id="balance">10,000</span> R$</div>
-                <button id="admin-btn" style="display:none;" onclick="toggleAdmin()">ADMIN</button>
-                <button onclick="location.reload()" class="logout-btn">Log Out</button>
+            <div class="user-pill">
+                <span id="display-name">User</span> • <span class="bal-text"><span id="balance">0</span> R$</span>
+                <button class="logout-btn" onclick="location.reload()">LOGOUT</button>
             </div>
         </header>
 
-        <main class="content">
-            <aside class="players-sidebar">
-                <div class="sidebar-header">Players (0) <span>0 R$</span></div>
-                <div id="player-list" class="empty-list">Waiting for players...</div>
-            </aside>
-
-            <section class="game-container">
-                <!-- CRASH GAME -->
-                <div id="crash-game" class="game-module">
-                    <div class="chart-area">
-                        <h1 id="multiplier-text">1.00x</h1>
+        <main class="dashboard">
+            <section id="game-view" class="view">
+                <div class="game-card glass" id="crash-area">
+                    <h1 id="multiplier">1.00x</h1>
+                    <div class="controls">
+                        <input type="number" id="bet-amt" value="100">
+                        <button id="main-action" onclick="playCrash()">BET</button>
                     </div>
-                    <div class="bet-footer">
-                        <div class="input-group">
-                            <label>BET AMOUNT</label>
-                            <input type="number" id="crash-bet" value="100">
-                        </div>
-                        <button id="crash-control" onclick="handleCrashAction()">BET</button>
+                </div>
+            </section>
+
+            <section id="admin-view" class="view" style="display:none;">
+                <div class="admin-header">
+                    <div class="admin-icon">⚙️</div>
+                    <div>
+                        <h2>Admin Panel</h2>
+                        <p>Manage users, funds, and accounts</p>
                     </div>
                 </div>
 
-                <!-- MINES GAME -->
-                <div id="mines-game" class="game-module" style="display:none;">
-                    <div id="mines-grid" class="grid-5x5"></div>
-                    <div class="bet-footer">
-                        <input type="number" id="mines-bet" value="100">
-                        <button onclick="startMines()">START GAME</button>
-                        <button id="mines-cashout" disabled onclick="cashOutMines()">CASH OUT</button>
+                <div class="user-lookup glass">
+                    <h3>🔍 User Lookup</h3>
+                    <div class="search-row">
+                        <input type="text" id="target-user" placeholder="Enter username...">
+                        <button class="btn-orange" onclick="adminLookup()">LOOK UP</button>
                     </div>
                 </div>
 
-                <!-- TOWERS GAME -->
-                <div id="towers-game" class="game-module" style="display:none;">
-                    <div id="towers-grid" class="tower-container"></div>
-                    <div class="bet-footer">
-                        <input type="number" id="towers-bet" value="100">
-                        <button onclick="startTowers()">START TOWERS</button>
+                <div id="lookup-results" class="glass" style="display:none;">
+                    <div class="result-header">
+                        <h2 id="res-name">User</h2>
+                        <p id="res-id">ID: 0001</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span>BALANCE</span><p id="res-bal">0</p></div>
+                        <div class="stat-box"><span>WAGERED</span><p>0</p></div>
+                        <div class="stat-box"><span>PROFIT</span><p id="res-profit" style="color:var(--red)">0</p></div>
+                    </div>
+                    <div class="admin-actions">
+                        <button class="btn-green" onclick="adjustFunds(1000)">+ GIVE 1,000</button>
+                        <button class="btn-red" onclick="adjustFunds(-1000)">- REMOVE 1,000</button>
+                        <button class="btn-danger" onclick="deleteUser()">DELETE ACCOUNT</button>
                     </div>
                 </div>
             </section>
         </main>
-
-        <!-- ADMIN PANEL MODAL -->
-        <div id="admin-panel" class="admin-modal">
-            <h2>Admin Terminal</h2>
-            <div class="admin-grid">
-                <button onclick="adjustBalance(100000)">+100k R$</button>
-                <button onclick="adjustBalance(-10000)">-10k R$</button>
-                <button onclick="toggleGodMode()">God Mode: <span id="god-status">OFF</span></button>
-                <button onclick="alert('All Users Banned (Simulated)')" style="background: red;">Ban All</button>
-            </div>
-            <button onclick="toggleAdmin()" class="close-admin">Close</button>
-        </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,18 +1,30 @@
-:root { --bg: #050505; --card: rgba(25, 25, 25, 0.9); --accent: #1fd65f; --orange: #ff9f1c; --red: #ff4d4d; }
-body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
-.glass { background: var(--card); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; }
-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin: 10px; }
-.badge { background: var(--accent); color: black; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-.nav-btn { background: #1a1a1a; border: none; color: #888; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 5px; }
-.nav-btn.active { background: #2a2a2a; color: white; }
-.dashboard { padding: 40px; display: flex; justify-content: center; height: 80vh; }
-.game-card { width: 100%; max-width: 600px; padding: 40px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
-.controls { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-input { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; width: 100px; }
-button { padding: 12px 25px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-.btn-primary { background: var(--accent); color: black; }
-.btn-orange { background: var(--orange); color: black; }
-.btn-green { background: #1fd65f; } .btn-red { background: #ff4d4d; }
-.mines-grid { display: grid; grid-template-columns: repeat(5, 50px); gap: 10px; margin: 0 auto 20px auto; }
-.tile { width: 50px; height: 50px; background: #222; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-#auth-screen { height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; position: fixed; background: #000; z-index: 999; }
+:root { --bg: #050505; --accent: #1fd65f; --red: #ff4d4d; --blue: #3498db; --purple: #9b59b6; }
+body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+.glass { background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; }
+header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; margin: 10px; }
+.grad-text { background: linear-gradient(90deg, #1fd65f, #1fdfdf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 80px; }
+.nav-btn { background: #1a1a1a; border: none; color: #888; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-right: 8px; transition: 0.3s; }
+.nav-btn.active { background: #333; color: white; border-bottom: 2px solid var(--accent); }
+
+/* Button Gradients */
+.grad-green { background: linear-gradient(135deg, #1fd65f 0%, #0fa345 100%); color: black; }
+.grad-orange { background: linear-gradient(135deg, #ff9f1c 0%, #ff6b1c 100%); color: black; }
+.grad-blue { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+.grad-purple { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+
+.game-view { width: 800px; margin: 0 auto; padding-top: 50px; }
+.game-card { padding: 50px; text-align: center; }
+.controls { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+input { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; outline: none; }
+button { padding: 12px 30px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+button:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+.mines-grid { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; }
+.towers-container { display: flex; flex-direction: column-reverse; gap: 10px; align-items: center; }
+.tower-row { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 5px; }
+.tile { width: 60px; height: 60px; background: #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+.wheel { font-size: 60px; font-weight: bold; padding: 40px; border: 5px solid #333; border-radius: 50%; width: 100px; height: 100px; line-height: 100px; margin: 0 auto; }
+#auth-screen { height: 100vh; width: 100vw; position: fixed; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #111, #000); z-index: 1000; }
+.auth-box { width: 350px; padding: 40px; text-align: center; }
+.badge { background: var(--accent); color: black; padding: 2px 8px; border-radius: 5px; font-size: 11px; }

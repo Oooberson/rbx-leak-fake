@@ -1,124 +1,95 @@
-let currentUser = null;
-let targetUserObj = null; // For the admin lookup
-let crashActive = false;
-let crashValue = 1.00;
-let crashInterval;
+let currentUser = null, targetUserObj = null, infLuck = false, crashActive = false, crashVal = 1.0, crashInt;
 
-// Pre-set Owner account
-if(!localStorage.getItem("Owner")) {
-    localStorage.setItem("Owner", JSON.stringify({user: "Owner", pass: "12345", balance: 500000, isAdmin: true}));
-}
+// Default Admin
+if(!localStorage.getItem("Owner")) localStorage.setItem("Owner", JSON.stringify({user:"Owner", pass:"12345", balance:1000000, isAdmin:true}));
 
-// 1. AUTHENTICATION
 function handleAuth(type) {
-    const u = document.getElementById('username').value.trim();
-    const p = document.getElementById('password').value.trim();
-    if(!u || !p) return alert("Enter credentials");
-
+    const u = document.getElementById('username').value, p = document.getElementById('password').value;
     if(type === 'signup') {
-        if(localStorage.getItem(u)) return alert("User exists");
-        let newUser = { user: u, pass: p, balance: 10000, isAdmin: u.toLowerCase().includes('admin') };
-        localStorage.setItem(u, JSON.stringify(newUser));
-        currentUser = newUser;
+        let data = {user:u, pass:p, balance:10000, isAdmin:u.toLowerCase().includes('admin')};
+        localStorage.setItem(u, JSON.stringify(data));
+        currentUser = data;
     } else {
         let data = JSON.parse(localStorage.getItem(u));
-        if(data && data.pass === p) currentUser = data;
-        else return alert("Wrong login");
+        if(data && data.pass === p) currentUser = data; else return alert("Fail");
     }
-
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
     if(currentUser.isAdmin) document.getElementById('admin-nav-btn').style.display = 'inline-block';
-    syncUI();
+    sync();
 }
 
-function syncUI() {
-    document.getElementById('display-name').innerText = currentUser.user;
+function sync() {
     document.getElementById('balance').innerText = currentUser.balance.toLocaleString();
+    document.getElementById('display-name').innerText = currentUser.user;
     localStorage.setItem(currentUser.user, JSON.stringify(currentUser));
 }
 
-// 2. NAVIGATION
-function switchTab(tab) {
+function switchTab(t) {
     document.querySelectorAll('.game-view').forEach(v => v.style.display = 'none');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    
-    document.getElementById(tab + '-view').style.display = 'block';
-    // Find the button that was clicked to set it active
+    document.getElementById(t + '-view').style.display = 'block';
     event.currentTarget.classList.add('active');
 }
 
-// 3. CRASH GAME
 function handleCrashLogic() {
-    const btn = document.getElementById('crash-action-btn');
-    const display = document.getElementById('multiplier-display');
-    const bet = parseInt(document.getElementById('crash-bet').value);
-
+    const btn = document.getElementById('crash-action-btn'), disp = document.getElementById('multiplier-display'), bet = parseInt(document.getElementById('crash-bet').value);
     if(!crashActive) {
-        if(bet > currentUser.balance) return alert("Not enough R$");
-        currentUser.balance -= bet;
-        syncUI();
-        
-        crashActive = true;
-        crashValue = 1.00;
-        btn.innerText = "CASH OUT";
-        btn.style.background = "orange";
-        display.style.color = "white";
-
-        let crashAt = (Math.random() * 4 + 1.1).toFixed(2); // Random crash point
-
-        crashInterval = setInterval(() => {
-            crashValue += 0.01;
-            display.innerText = crashValue.toFixed(2) + "x";
-
-            if(crashValue >= crashAt) {
-                clearInterval(crashInterval);
-                crashActive = false;
-                display.style.color = "#ff4d4d";
-                display.innerText = "CRASHED @ " + crashValue.toFixed(2) + "x";
-                btn.innerText = "BET";
-                btn.style.background = ""; 
-            }
+        if(bet > currentUser.balance) return;
+        currentUser.balance -= bet; sync();
+        crashActive = true; crashVal = 1.0; btn.innerText = "CASH OUT";
+        let boom = infLuck ? 999 : (Math.random() * 5 + 1.1);
+        crashInt = setInterval(() => {
+            crashVal += 0.01; disp.innerText = crashVal.toFixed(2) + "x";
+            if(crashVal >= boom) { clearInterval(crashInt); crashActive = false; disp.style.color = "red"; btn.innerText = "BET"; }
         }, 100);
     } else {
-        // CASH OUT
-        clearInterval(crashInterval);
-        crashActive = false;
-        let win = Math.floor(bet * crashValue);
-        currentUser.balance += win;
-        alert("Success! You won " + win + " R$");
-        btn.innerText = "BET";
-        btn.style.background = "";
-        syncUI();
+        clearInterval(crashInt); crashActive = false;
+        currentUser.balance += Math.floor(bet * crashVal);
+        btn.innerText = "BET"; sync(); alert("Won!");
     }
 }
 
-// 4. ADMIN PANEL LOOKUP
+function playLimbo() {
+    const bet = parseInt(document.getElementById('limbo-bet').value), target = parseFloat(document.getElementById('limbo-target').value);
+    if(bet > currentUser.balance) return;
+    currentUser.balance -= bet;
+    let res = infLuck ? target + 1 : (Math.random() * 10);
+    document.getElementById('limbo-result').innerText = res.toFixed(2) + "x";
+    if(res >= target) currentUser.balance += Math.floor(bet * target);
+    sync();
+}
+
+function startMines() {
+    const grid = document.getElementById('mines-grid'), bet = parseInt(document.getElementById('mines-bet').value);
+    if(bet > currentUser.balance) return;
+    currentUser.balance -= bet; sync(); grid.innerHTML = '';
+    let mines = infLuck ? [] : Array.from({length:5}, () => Math.floor(Math.random()*25));
+    for(let i=0; i<25; i++) {
+        let t = document.createElement('div'); t.className = 'tile';
+        t.onclick = () => {
+            if(mines.includes(i)) { t.style.background = "red"; alert("Boom"); startMines(); }
+            else { t.style.background = "green"; currentUser.balance += (bet*0.1); sync(); }
+        };
+        grid.appendChild(t);
+    }
+}
+
 function adminLookupUser() {
-    const searchName = document.getElementById('target-username').value.trim();
-    const data = JSON.parse(localStorage.getItem(searchName));
-
-    if(data) {
-        targetUserObj = data;
+    targetUserObj = JSON.parse(localStorage.getItem(document.getElementById('target-username').value));
+    if(targetUserObj) {
         document.getElementById('lookup-results').style.display = 'block';
-        document.getElementById('res-name').innerText = data.user;
-        document.getElementById('res-bal').innerText = data.balance.toLocaleString();
-    } else {
-        alert("User not found!");
+        document.getElementById('res-name').innerText = targetUserObj.user;
+        document.getElementById('res-bal').innerText = targetUserObj.balance;
     }
 }
 
-function modifyUserFunds(amt) {
-    if(!targetUserObj) return;
-    targetUserObj.balance += amt;
+function modifyUserFunds(add) {
+    let a = parseInt(document.getElementById('admin-amount').value);
+    targetUserObj.balance += add ? a : -a;
     localStorage.setItem(targetUserObj.user, JSON.stringify(targetUserObj));
-    
-    // Refresh the lookup view
-    document.getElementById('res-bal').innerText = targetUserObj.balance.toLocaleString();
-    
-    // If you are editing yourself, update your main balance
-    if(targetUserObj.user === currentUser.user) {
-        currentUser.balance = targetUserObj.balance;
-        syncUI();
-    }
+    if(targetUserObj.user === currentUser.user) { currentUser.balance = targetUserObj.balance; sync(); }
+    adminLookupUser();
 }
+
+function toggleInfLuck() { infLuck = !infLuck; document.getElementById('luck-status').innerText = infLuck ? "INF" : "NORM"; }

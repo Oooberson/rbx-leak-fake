@@ -1,73 +1,82 @@
 :root {
-    --bg-dark: #0f0f0f;
-    --card-bg: #1a1a1a;
-    --accent: #2c2c2c;
-    --green: #00e676;
-    --red: #ff5252;
-    --text: #ffffff;
+    --bg: #050505;
+    --card: rgba(25, 25, 25, 0.8);
+    --accent: #1fd65f;
+    --orange: #ff9f1c;
+    --red: #ff4d4d;
+    --glass-border: rgba(255, 255, 255, 0.05);
 }
 
 body {
-    margin: 0; padding: 0; background: var(--bg-dark); color: var(--text);
-    font-family: 'Inter', sans-serif; overflow: hidden;
+    background: var(--bg);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
 }
 
+.glass {
+    background: var(--card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+}
+
+/* Header Styling */
 header {
-    height: 60px; background: var(--card-bg); display: flex;
-    justify-content: space-between; align-items: center; padding: 0 20px;
-    border-bottom: 2px solid var(--accent);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    margin: 10px;
 }
 
-.nav-tabs .tab-btn {
-    background: var(--accent); border: none; color: #888; padding: 8px 18px;
-    border-radius: 6px; cursor: pointer; margin-right: 5px; font-weight: bold;
+.badge {
+    background: var(--accent);
+    color: black;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
 }
 
-.nav-tabs .tab-btn.active { background: var(--green); color: #000; }
-
-.balance-display {
-    background: #000; padding: 6px 15px; border-radius: 4px;
-    color: gold; font-weight: bold; display: inline-block; margin: 0 15px;
+/* Nav Buttons like your image */
+.nav-btn {
+    background: #1a1a1a;
+    border: none;
+    color: #888;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
-.content { display: flex; height: calc(100vh - 60px); }
-
-.players-sidebar {
-    width: 300px; background: var(--card-bg); border-right: 1px solid var(--accent);
-    padding: 15px; font-size: 14px; color: #666;
+.nav-btn.active {
+    background: #2a2a2a;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
-.game-container { flex: 1; padding: 40px; display: flex; justify-content: center; align-items: center; }
+/* Admin Panel Styling */
+.admin-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+.admin-icon { background: var(--orange); padding: 10px; border-radius: 10px; font-size: 20px; }
 
-.game-module {
-    background: var(--card-bg); width: 100%; max-width: 900px; height: 500px;
-    border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
-}
+.user-lookup { padding: 20px; margin-bottom: 20px; }
+.search-row { display: flex; gap: 10px; }
+.search-row input { flex: 1; background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; }
 
-.chart-area { flex: 1; display: flex; justify-content: center; align-items: center; font-size: 80px; }
+/* Stats Boxes */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+.stat-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #222; }
+.stat-box span { font-size: 10px; color: #666; font-weight: bold; }
+.stat-box p { font-size: 18px; margin: 5px 0 0 0; font-weight: bold; }
 
-.bet-footer {
-    background: #141414; padding: 20px; display: flex; gap: 15px; align-items: center;
-    border-top: 1px solid var(--accent);
-}
+/* Buttons */
+.btn-orange { background: var(--orange); border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+.btn-green { background: #1fd65f; color: black; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
+.btn-red { background: #ff4d4d; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
+.btn-danger { background: #1a1a1a; border: 1px solid #ff4d4d; color: #ff4d4d; width: 100%; margin-top: 20px; padding: 10px; border-radius: 8px; cursor: pointer; }
 
-.bet-footer input { background: #000; border: 1px solid var(--accent); color: white; padding: 10px; border-radius: 4px; }
-
-#crash-control { background: var(--green); border: none; padding: 12px 40px; border-radius: 4px; font-weight: bold; cursor: pointer; flex: 1; }
-
-/* Mines Grid */
-.grid-5x5 { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; margin: auto; }
-.tile { width: 60px; height: 60px; background: var(--accent); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-.tile:hover { background: #3d3d3d; }
-.tile.safe { background: var(--green); color: black; }
-.tile.mine { background: var(--red); }
-
-/* Auth Box */
-#auth-screen { position: fixed; inset: 0; background: var(--bg-dark); display: flex; justify-content: center; align-items: center; z-index: 100; }
-.auth-box { background: var(--card-bg); padding: 40px; border-radius: 12px; width: 320px; text-align: center; }
-.auth-box input { width: 90%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid var(--accent); color: white; border-radius: 4px; }
-.auth-box button { width: 100%; padding: 12px; background: var(--green); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
-
-/* Admin Panel */
-.admin-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; border: 2px solid gold; padding: 30px; z-index: 200; border-radius: 10px; }
-.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Auth Layout */
+#auth-screen { height: 100vh; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at center, #111, #000); }
+.auth-box { padding: 40px; width: 350px; text-align: center; }

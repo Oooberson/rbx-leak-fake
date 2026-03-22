@@ -1,82 +1,18 @@
-:root {
-    --bg: #050505;
-    --card: rgba(25, 25, 25, 0.8);
-    --accent: #1fd65f;
-    --orange: #ff9f1c;
-    --red: #ff4d4d;
-    --glass-border: rgba(255, 255, 255, 0.05);
-}
-
-body {
-    background: var(--bg);
-    color: white;
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-}
-
-.glass {
-    background: var(--card);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-}
-
-/* Header Styling */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 30px;
-    margin: 10px;
-}
-
-.badge {
-    background: var(--accent);
-    color: black;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-/* Nav Buttons like your image */
-.nav-btn {
-    background: #1a1a1a;
-    border: none;
-    color: #888;
-    padding: 10px 20px;
-    margin: 0 5px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.nav-btn.active {
-    background: #2a2a2a;
-    color: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-/* Admin Panel Styling */
-.admin-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-.admin-icon { background: var(--orange); padding: 10px; border-radius: 10px; font-size: 20px; }
-
-.user-lookup { padding: 20px; margin-bottom: 20px; }
-.search-row { display: flex; gap: 10px; }
-.search-row input { flex: 1; background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; }
-
-/* Stats Boxes */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
-.stat-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #222; }
-.stat-box span { font-size: 10px; color: #666; font-weight: bold; }
-.stat-box p { font-size: 18px; margin: 5px 0 0 0; font-weight: bold; }
-
-/* Buttons */
-.btn-orange { background: var(--orange); border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-.btn-green { background: #1fd65f; color: black; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
-.btn-red { background: #ff4d4d; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
-.btn-danger { background: #1a1a1a; border: 1px solid #ff4d4d; color: #ff4d4d; width: 100%; margin-top: 20px; padding: 10px; border-radius: 8px; cursor: pointer; }
-
-/* Auth Layout */
-#auth-screen { height: 100vh; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at center, #111, #000); }
-.auth-box { padding: 40px; width: 350px; text-align: center; }
+:root { --bg: #050505; --card: rgba(25, 25, 25, 0.9); --accent: #1fd65f; --orange: #ff9f1c; --red: #ff4d4d; }
+body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
+.glass { background: var(--card); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; }
+header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin: 10px; }
+.badge { background: var(--accent); color: black; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+.nav-btn { background: #1a1a1a; border: none; color: #888; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 5px; }
+.nav-btn.active { background: #2a2a2a; color: white; }
+.dashboard { padding: 40px; display: flex; justify-content: center; height: 80vh; }
+.game-card { width: 100%; max-width: 600px; padding: 40px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+.controls { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+input { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; width: 100px; }
+button { padding: 12px 25px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+.btn-primary { background: var(--accent); color: black; }
+.btn-orange { background: var(--orange); color: black; }
+.btn-green { background: #1fd65f; } .btn-red { background: #ff4d4d; }
+.mines-grid { display: grid; grid-template-columns: repeat(5, 50px); gap: 10px; margin: 0 auto 20px auto; }
+.tile { width: 50px; height: 50px; background: #222; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+#auth-screen { height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; position: fixed; background: #000; z-index: 999; }

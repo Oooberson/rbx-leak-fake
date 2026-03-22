@@ -1,30 +1,125 @@
-:root { --bg: #050505; --accent: #1fd65f; --red: #ff4d4d; --blue: #3498db; --purple: #9b59b6; }
-body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
-.glass { background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; }
-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; margin: 10px; }
-.grad-text { background: linear-gradient(90deg, #1fd65f, #1fdfdf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 80px; }
-.nav-btn { background: #1a1a1a; border: none; color: #888; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-right: 8px; transition: 0.3s; }
-.nav-btn.active { background: #333; color: white; border-bottom: 2px solid var(--accent); }
+:root { 
+    --bg: #030303; 
+    --glass: rgba(20, 20, 20, 0.8);
+    --accent: #1fd65f; 
+    --grad-green: linear-gradient(135deg, #1fd65f 0%, #0ba344 100%);
+    --grad-orange: linear-gradient(135deg, #ff9f1c 0%, #d47a00 100%);
+    --red: #ff4d4d; --black: #1a1a1a;
+}
+body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
+.glass { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+.glass-card { background: var(--glass); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 600px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-/* Button Gradients */
-.grad-green { background: linear-gradient(135deg, #1fd65f 0%, #0fa345 100%); color: black; }
-.grad-orange { background: linear-gradient(135deg, #ff9f1c 0%, #ff6b1c 100%); color: black; }
-.grad-blue { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
-.grad-purple { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin: 10px; border-radius: 15px; }
+.badge { background: var(--accent); color: black; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
 
-.game-view { width: 800px; margin: 0 auto; padding-top: 50px; }
-.game-card { padding: 50px; text-align: center; }
-.controls { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
-input { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; outline: none; }
-button { padding: 12px 30px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-button:hover { transform: translateY(-2px); filter: brightness(1.2); }
+.layout { display: flex; height: 8I hear you. Maximum effort from me, zero effort for you. 
 
-.mines-grid { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; }
-.towers-container { display: flex; flex-direction: column-reverse; gap: 10px; align-items: center; }
-.tower-row { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 5px; }
-.tile { width: 60px; height: 60px; background: #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+I have overhauled the entire UI to include **Linear Gradients**, **Glassmorphism**, a functional **Leaderboard** (that pulls from the local database), and added **"Towers"** and **"Double"** (Roulette). 
 
-.wheel { font-size: 60px; font-weight: bold; padding: 40px; border: 5px solid #333; border-radius: 50%; width: 100px; height: 100px; line-height: 100px; margin: 0 auto; }
-#auth-screen { height: 100vh; width: 100vw; position: fixed; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #111, #000); z-index: 1000; }
-.auth-box { width: 350px; padding: 40px; text-align: center; }
-.badge { background: var(--accent); color: black; padding: 2px 8px; border-radius: 5px; font-size: 11px; }
+### 1. The HTML (`index.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RORUSH | Ultimate Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap)" rel="stylesheet">
+</head>
+<body>
+    <div id="auth-screen">
+        <div class="auth-box glass">
+            <h1 class="logo-text">RORUSH <span class="badge">ROBLOX</span></h1>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="handleAuth('login')" class="btn-primary">LOGIN</button>
+            <button onclick="handleAuth('signup')" class="btn-ghost">SIGN UP</button>
+        </div>
+    </div>
+
+    <div id="game-screen" style="display:none;">
+        <header class="glass">
+            <div class="brand">RORUSH <span class="badge">ROBLOX</span></div>
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="switchTab('crash')">Crash</button>
+                <button class="nav-btn" onclick="switchTab('mines')">Mines</button>
+                <button class="nav-btn" onclick="switchTab('towers')">Towers</button>
+                <button class="nav-btn" onclick="switchTab('double')">Double</button>
+                <button class="nav-btn" onclick="switchTab('leaderboard')" onclick="loadLeaderboard()">🏆 Top</button>
+                <button class="nav-btn admin-btn" id="admin-nav-btn" style="display:none;" onclick="switchTab('admin')">⚙️ Admin</button>
+            </div>
+            <div class="user-pill glass">
+                <span id="display-name">User</span> • <span class="bal-text"><span id="balance">0</span> R$</span>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <!-- CRASH -->
+            <section id="crash-view" class="game-view">
+                <div class="game-card glass">
+                    <h1 id="multiplier-display" class="grad-text">1.00x</h1>
+                    <div class="controls">
+                        <input type="number" id="crash-bet" value="100">
+                        <button id="crash-action-btn" class="btn-primary grad-green" onclick="handleCrashLogic()">BET</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MINES -->
+            <section id="mines-view" class="game-view" style="display:none;">
+                <div class="game-card glass">
+                    <div id="mines-grid" class="mines-grid"></div>
+                    <div class="controls"><input type="number" id="mines-bet" value="100"> <button class="btn-primary grad-blue" onclick="startMines()">START</button></div>
+                </div>
+            </section>
+
+            <!-- TOWERS -->
+            <section id="towers-view" class="game-view" style="display:none;">
+                <div class="game-card glass">
+                    <div id="towers-grid" class="towers-container"></div>
+                    <div class="controls"><input type="number" id="towers-bet" value="100"> <button class="btn-primary grad-purple" onclick="startTowers()">CLIMB</button></div>
+                </div>
+            </section>
+
+            <!-- DOUBLE -->
+            <section id="double-view" class="game-view" style="display:none;">
+                <div class="game-card glass">
+                    <div id="double-wheel" class="wheel">0</div>
+                    <div class="controls">
+                        <input type="number" id="double-bet" value="100">
+                        <button class="btn-red" onclick="playDouble('red')">RED (2x)</button>
+                        <button class="btn-green" onclick="playDouble('green')">GREEN (14x)</button>
+                        <button class="btn-black" onclick="playDouble('black')">BLACK (2x)</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEADERBOARD -->
+            <section id="leaderboard-view" class="game-view" style="display:none;">
+                <div class="game-card glass">
+                    <h2>🏆 Global Leaderboard</h2>
+                    <div id="lb-content"></div>
+                </div>
+            </section>
+
+            <!-- ADMIN -->
+            <section id="admin-view" class="game-view" style="display:none;">
+                <div class="admin-header glass">
+                    <input type="text" id="target-username" placeholder="Search User...">
+                    <button class="btn-primary grad-orange" onclick="adminLookupUser()">SEARCH</button>
+                </div>
+                <div id="lookup-results" class="glass" style="display:none; margin-top:20px; padding:20px;">
+                    <h2 id="res-name">User</h2>
+                    <p>Balance: <span id="res-bal">0</span> | Luck: <span id="luck-status">OFF</span></p>
+                    <input type="number" id="admin-amount" placeholder="Amount...">
+                    <button class="btn-green" onclick="modifyUserFunds(true)">GIVE</button>
+                    <button class="btn-red" onclick="modifyUserFunds(false)">REMOVE</button>
+                    <button class="btn-ghost grad-border" onclick="toggleInfLuck()">TOGGLE GOD MODE</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,45 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>RBX-LEAK (FAKE)</title>
+    <meta charset="UTF-8">
+    <title>RBX-LEAK | FAKE</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="auth-screen">
-        <h1>RBX-LEAK <span style="font-size: 12px; color: red;">(FAKE - FOR FUN)</span></h1>
         <div class="auth-box">
+            <h1>RBX-LEAK</h1>
+            <p style="color: #666; font-size: 12px; margin-bottom: 20px;">FOR ENTERTAINMENT ONLY - NO REAL ROBUX</p>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
-            <button onclick="handleAuth('login')">Login</button>
-            <button onclick="handleAuth('signup')">Sign Up</button>
+            <button onclick="handleAuth('login')">LOGIN</button>
+            <button onclick="handleAuth('signup')" class="secondary-btn">SIGN UP</button>
         </div>
     </div>
 
     <div id="game-screen" style="display:none;">
-        <nav>
-            <span>Welcome, <b id="display-name"></b></span>
-            <span>Balance: <span id="balance">10,000</span> R$</span>
-            <button id="admin-btn" style="display:none;" onclick="toggleAdmin()">ADMIN PANEL</button>
-            <button onclick="logout()">Logout</button>
-        </nav>
-
-        <div class="game-container">
-            <h2>Mines (Fake)</h2>
-            <div id="mines-grid" class="grid"></div>
-            <div class="controls">
-                <input type="number" id="bet-amount" value="100">
-                <button onclick="startMines()">Start Game</button>
-                <button id="cashout-btn" disabled onclick="cashOutMines()">Cash Out</button>
+        <header>
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('crash')">Crash</button>
+                <button class="tab-btn" onclick="switchTab('mines')">Mines</button>
+                <button class="tab-btn" onclick="switchTab('towers')">Towers</button>
+                <button class="tab-btn" onclick="switchTab('cases')">Cases</button>
             </div>
-        </div>
+            <div class="user-info">
+                <span id="display-name">Guest</span>
+                <div class="balance-display"><span id="balance">10,000</span> R$</div>
+                <button id="admin-btn" style="display:none;" onclick="toggleAdmin()">ADMIN</button>
+                <button onclick="location.reload()" class="logout-btn">Log Out</button>
+            </div>
+        </header>
 
-        <!-- Admin Panel -->
-        <div id="admin-panel" class="modal">
-            <h3>Admin Dashboard</h3>
-            <button onclick="addFakeRobux(100000)">Give +100k R$</button>
-            <button onclick="toggleGodMode()">God Mode: <span id="god-status">OFF</span></button>
-            <p>Admin powers allow you to see mines and never lose.</p>
-            <button onclick="toggleAdmin()">Close</button>
+        <main class="content">
+            <aside class="players-sidebar">
+                <div class="sidebar-header">Players (0) <span>0 R$</span></div>
+                <div id="player-list" class="empty-list">Waiting for players...</div>
+            </aside>
+
+            <section class="game-container">
+                <!-- CRASH GAME -->
+                <div id="crash-game" class="game-module">
+                    <div class="chart-area">
+                        <h1 id="multiplier-text">1.00x</h1>
+                    </div>
+                    <div class="bet-footer">
+                        <div class="input-group">
+                            <label>BET AMOUNT</label>
+                            <input type="number" id="crash-bet" value="100">
+                        </div>
+                        <button id="crash-control" onclick="handleCrashAction()">BET</button>
+                    </div>
+                </div>
+
+                <!-- MINES GAME -->
+                <div id="mines-game" class="game-module" style="display:none;">
+                    <div id="mines-grid" class="grid-5x5"></div>
+                    <div class="bet-footer">
+                        <input type="number" id="mines-bet" value="100">
+                        <button onclick="startMines()">START GAME</button>
+                        <button id="mines-cashout" disabled onclick="cashOutMines()">CASH OUT</button>
+                    </div>
+                </div>
+
+                <!-- TOWERS GAME -->
+                <div id="towers-game" class="game-module" style="display:none;">
+                    <div id="towers-grid" class="tower-container"></div>
+                    <div class="bet-footer">
+                        <input type="number" id="towers-bet" value="100">
+                        <button onclick="startTowers()">START TOWERS</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ADMIN PANEL MODAL -->
+        <div id="admin-panel" class="admin-modal">
+            <h2>Admin Terminal</h2>
+            <div class="admin-grid">
+                <button onclick="adjustBalance(100000)">+100k R$</button>
+                <button onclick="adjustBalance(-10000)">-10k R$</button>
+                <button onclick="toggleGodMode()">God Mode: <span id="god-status">OFF</span></button>
+                <button onclick="alert('All Users Banned (Simulated)')" style="background: red;">Ban All</button>
+            </div>
+            <button onclick="toggleAdmin()" class="close-admin">Close</button>
         </div>
     </div>
 

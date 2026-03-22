@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RORUSH | Dashboard</title>
+    <title>RORUSH | Extreme Edition</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -10,10 +10,9 @@
     <div id="auth-screen">
         <div class="auth-box glass">
             <h1 class="logo-text">RORUSH <span class="badge">ROBLOX</span></h1>
-            <p style="color:#666; font-size:12px; margin-bottom:20px;">FAKE CURRENCY - FOR FUN</p>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
-            <button onclick="handleAuth('login')" class="btn-primary">LOGIN</button>
+            <button onclick="handleAuth('login')" class="btn-grad-green">LOGIN</button>
             <button onclick="handleAuth('signup')" class="btn-ghost">SIGN UP</button>
         </div>
     </div>
@@ -24,6 +23,7 @@
             <div class="nav-links">
                 <button class="nav-btn active" onclick="switchTab('crash')">Crash</button>
                 <button class="nav-btn" onclick="switchTab('mines')">Mines</button>
+                <button class="nav-btn" onclick="switchTab('double')">Double</button>
                 <button class="nav-btn" onclick="switchTab('limbo')">Limbo</button>
                 <button class="nav-btn" id="admin-nav-btn" style="display:none;" onclick="switchTab('admin')">⚙️ Admin</button>
             </div>
@@ -33,52 +33,71 @@
             </div>
         </header>
 
-        <main class="dashboard">
-            <section id="crash-view" class="game-view">
-                <div class="game-card glass">
+        <main class="layout">
+            <aside class="sidebar glass">
+                <h3>🏆 LEADERBOARD</h3>
+                <div id="leaderboard-list"></div>
+            </aside>
+
+            <section class="game-area">
+                <!-- CRASH -->
+                <div id="crash-view" class="game-view glass-card">
                     <h1 id="multiplier-display">1.00x</h1>
                     <div class="controls">
                         <input type="number" id="crash-bet" value="100">
-                        <button id="crash-action-btn" class="btn-primary" onclick="handleCrashLogic()">BET</button>
+                        <button id="crash-action-btn" class="btn-grad-green" onclick="handleCrashLogic()">BET</button>
                     </div>
                 </div>
-            </section>
 
-            <section id="mines-view" class="game-view" style="display:none;">
-                <div class="game-card glass">
+                <!-- MINES -->
+                <div id="mines-view" class="game-view glass-card" style="display:none;">
                     <div id="mines-grid" class="mines-grid"></div>
                     <div class="controls">
                         <input type="number" id="mines-bet" value="100">
-                        <button class="btn-primary" onclick="startMines()">START MINES</button>
+                        <button class="btn-grad-green" onclick="startMines()">START MINES</button>
                     </div>
                 </div>
-            </section>
 
-            <section id="limbo-view" class="game-view" style="display:none;">
-                <div class="game-card glass">
-                    <h1 id="limbo-result" style="font-size:80px;">1.00x</h1>
+                <!-- DOUBLE (ROULETTE) -->
+                <div id="double-view" class="game-view glass-card" style="display:none;">
+                    <div class="double-wheel-container">
+                        <div id="double-wheel" class="double-wheel">0 1 2 3 4 5 6 7 8 9 10 11 12 13 14</div>
+                    </div>
+                    <div class="double-controls">
+                        <input type="number" id="double-bet" value="100">
+                        <div class="btn-group">
+                            <button onclick="playDouble('red')" class="btn-red">RED (2x)</button>
+                            <button onclick="playDouble('green')" class="btn-green">GREEN (14x)</button>
+                            <button onclick="playDouble('black')" class="btn-black">BLACK (2x)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIMBO -->
+                <div id="limbo-view" class="game-view glass-card" style="display:none;">
+                    <h1 id="limbo-result">1.00x</h1>
                     <div class="controls">
-                        <input type="number" id="limbo-target" placeholder="Target (e.g. 2.0)" value="2.0">
+                        <input type="number" id="limbo-target" value="2.0">
                         <input type="number" id="limbo-bet" value="100">
-                        <button class="btn-orange" onclick="playLimbo()">ROLL</button>
+                        <button class="btn-grad-orange" onclick="playLimbo()">ROLL</button>
                     </div>
                 </div>
-            </section>
 
-            <section id="admin-view" class="game-view" style="display:none;">
-                <div class="admin-header glass" style="padding:20px;">
+                <!-- ADMIN -->
+                <div id="admin-view" class="game-view glass-card" style="display:none;">
                     <h2>⚙️ Admin Terminal</h2>
-                    <input type="text" id="target-username" placeholder="Lookup Username...">
-                    <button class="btn-orange" onclick="adminLookupUser()">SEARCH</button>
-                </div>
-                <div id="lookup-results" class="glass" style="display:none; margin-top:20px; padding:20px;">
-                    <h2 id="res-name">User</h2>
-                    <p>Balance: <span id="res-bal">0</span></p>
-                    <p>Luck: <span id="luck-status">NORMAL</span></p>
-                    <input type="number" id="admin-amount" placeholder="Amount...">
-                    <button class="btn-green" onclick="modifyUserFunds(true)">GIVE</button>
-                    <button class="btn-red" onclick="modifyUserFunds(false)">REMOVE</button>
-                    <button class="btn-ghost" onclick="toggleInfLuck()" style="width:100%; border:1px solid #00e676; margin-top:10px;">TOGGLE INF LUCK</button>
+                    <input type="text" id="target-username" placeholder="Search Username...">
+                    <button class="btn-grad-orange" onclick="adminLookupUser()">SEARCH</button>
+                    <div id="lookup-results" style="display:none; margin-top:20px;">
+                        <h2 id="res-name">User</h2>
+                        <p>Luck: <span id="luck-status">NORMAL</span></p>
+                        <input type="number" id="admin-amount" placeholder="Amount...">
+                        <div class="btn-row">
+                            <button class="btn-grad-green" onclick="modifyUserFunds(true)">GIVE</button>
+                            <button class="btn-red" onclick="modifyUserFunds(false)">REMOVE</button>
+                        </div>
+                        <button class="btn-ghost" onclick="toggleInfLuck()" style="margin-top:10px; border-color:var(--accent)">INF LUCK</button>
+                    </div>
                 </div>
             </section>
         </main>
